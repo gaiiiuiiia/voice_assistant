@@ -1,0 +1,9 @@
+cffi==1.15.0
+navec==0.10.0
+numpy==1.22.3
+pycparser==2.21
+pyttsx3==2.90
+sounddevice==0.4.4
+SpeechRecognition==3.8.1
+vosk==0.3.32
+annoy==1.17.0
