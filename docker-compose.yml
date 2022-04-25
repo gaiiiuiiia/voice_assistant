@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  voice_assistant:
+    build: .
+    stdin_open: true
+    tty: true
+    user: '1000'
+    volumes:
+      - ./:/app
+    devices:
+      - /dev/snd:/dev/snd
+    environment:
+      - LANG=C.UTF-8
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+      - DISPLAY=$DISPLAY
+      - MPLBACKEND=TkAgg
