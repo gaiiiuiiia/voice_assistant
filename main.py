@@ -3,14 +3,21 @@ import logging
 import app.config as config
 from app.core.perk_loader import PerkLoader
 from app.core.perk_validator import PerkValidator
+from app.core.voice_module import VoiceModule
+from app.core.perk_manager import PerkManager
 
 
 def main() -> None:
     init_logger()
 
     validator = PerkValidator()
-    loader = PerkLoader(validator, config.get_path(config.PERK_DIRECTORY))
-    perks = loader.load()
+    perk_loader = PerkLoader(validator, config.get_path(config.PERK_DIRECTORY))
+    perk_manager = PerkManager(perk_loader)
+    voice_module = VoiceModule(perk_manager)
+
+    sentence = 'шарик скажи какая сейчас погода в казани'
+    voice_module.test(sentence)
+    # voice_module.listen()
 
 
 def init_logger() -> None:
