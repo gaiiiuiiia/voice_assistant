@@ -10,4 +10,4 @@ class ExceptionBase(Exception, LoggableInterface):
         self.log(message)
 
     def log(self, message: str) -> None:
-        logging.getLogger(__name__).info(f'logging message is: %s' % message)
+        logging.getLogger(__name__).info(f'Exception %s: %s' % (self.__class__.__name__, message))

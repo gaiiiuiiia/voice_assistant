@@ -15,7 +15,7 @@ def main() -> None:
     perk_manager = PerkManager(perk_loader)
     voice_module = VoiceModule(perk_manager)
 
-    sentence = 'шарик привет скажи какая сейчас погода в казани'
+    sentence = 'шарик кинь монету'
     voice_module.test(sentence)
     # voice_module.listen()
 

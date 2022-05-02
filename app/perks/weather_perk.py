@@ -16,5 +16,5 @@ class WeatherPerk(PerkBase):
             },
         }
 
-    def weather(self) -> None:
+    def weather(self, *args, **kwargs) -> None:
         pass

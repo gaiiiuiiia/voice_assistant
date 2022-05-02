@@ -8,13 +8,18 @@ logger = logging.getLogger(__name__)
 
 class PerkValidator:
 
-    # Используемые старт-слова в перках. Если в разных перков есть одинаковые старт-слова, валидатор выдаст исключение
+    # Используемые старт-слова в перках. Если в разных методах перков
+    # есть одинаковые старт-слова, валидатор выдаст исключение
     used_keywords = {}
 
     @classmethod
     def validate(cls, perk: PerkBase) -> None:
-        cls._validate_perk_methods(perk)
-        cls._validate_perk_keywords(perk)
+        try:
+            cls._validate_perk_methods(perk)
+            cls._validate_perk_keywords(perk)
+        except IncorrectPerkClassException:
+            logger.info(f'Перк %s не будет включен в список активных перков' % str(perk))
+            raise
 
     @staticmethod
     def _validate_perk_methods(perk: PerkBase) -> None:
@@ -38,7 +43,6 @@ class PerkValidator:
                 try:
                     cls.__check_perk_keyword(perk, method, keyword)
                 except IncorrectPerkClassException:
-                    logger.info(f'Перк %s не будет включен в список активных перков' % str(perk))
                     cls.used_keywords.pop(str(perk))
                     raise
 

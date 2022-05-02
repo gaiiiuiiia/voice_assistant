@@ -16,8 +16,13 @@ class PerkManager:
     def process(self, text: str) -> Optional[str]:
         perk_method = self._match_perk_method(text)
 
-        # TODO проверить, а нужны ли параметры методу
-        return perk_method(text)
+        try:
+            # TODO проверить, а нужны ли параметры методу
+            logger.info('Будет вызван метод "%s"' % perk_method.__name__)
+            result = perk_method(text)
+            logger.info('Результат метода "%s": %s' % (perk_method.__name__, str(result)))
+        except Exception as e:
+            logger.exception('Исключение при вызове метода "%s"' % perk_method.__name__)
 
     def _match_perk_method(self, text: str) -> Optional[callable]:
         """
