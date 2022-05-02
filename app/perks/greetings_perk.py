@@ -13,15 +13,8 @@ class GreetingsPerk(PerkBase):
                     'keywords': ['привет', 'как дела', 'что нового'],
                     'args': [''],
                 },
-                'meetings': {
-                    'keywords': ['привет', 'как дела', 'что нового'],
-                    'args': [''],
-                }
             },
         }
 
-    def greetings(self) -> None:
-        pass
-
-    def meetings(self) -> None:
-        pass
+    def greetings(self, *args, **kwargs) -> None:
+        print('Привет, Максим! Как твои дела?')

@@ -11,17 +11,17 @@ def main() -> None:
     init_logger()
 
     validator = PerkValidator()
-    perk_loader = PerkLoader(validator, config.get_path(config.PERK_DIRECTORY))
+    perk_loader = PerkLoader(validator, config.get_path_os_sep(config.PERK_DIRECTORY))
     perk_manager = PerkManager(perk_loader)
     voice_module = VoiceModule(perk_manager)
 
-    sentence = 'шарик скажи какая сейчас погода в казани'
+    sentence = 'шарик привет скажи какая сейчас погода в казани'
     voice_module.test(sentence)
     # voice_module.listen()
 
 
 def init_logger() -> None:
-    logging.basicConfig(filename=config.get_path(config.LOG_DIR) + '/log.log',
+    logging.basicConfig(filename=config.get_path_os_sep(config.LOG_DIR) + '/log.log',
                         format='%(asctime)s | %(levelname)s | %(name)s | %(message)s',
                         level=logging.INFO)
 

@@ -10,7 +10,7 @@ class WeatherPerk(PerkBase):
             'name': 'WeatherPerk',
             'methods': {
                 'weather': {
-                    'keywords': ['какая погода', 'привет'],
+                    'keywords': ['погода', 'температура на улице'],
                     'args': [''],
                 },
             },

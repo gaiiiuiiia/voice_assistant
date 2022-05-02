@@ -1,7 +1,7 @@
 import os
 
 
-def get_path(path: str) -> str:
+def get_path_os_sep(path: str) -> str:
     return os.sep.join(path.split('.'))
 
 
