@@ -29,9 +29,6 @@ class PerkLoader:
         perks = self._load_perks()
         validated_perks = self._get_valid_perks(perks)
 
-        for perk in validated_perks:
-            logger.info(f'Перк %s прошел валидацию' % str(perk))
-
         return validated_perks
 
     def _load_perks(self) -> List[PerkBase]:
@@ -60,6 +57,7 @@ class PerkLoader:
 
                 continue
             valid_perks.append(perk)
+            logger.info(f'Перк %s прошел валидацию' % str(perk))
 
         return valid_perks
 

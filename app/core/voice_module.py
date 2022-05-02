@@ -30,7 +30,7 @@ class VoiceModule:
 
     def _process_context(self, context: str) -> Optional[str]:
         if config.WAKE_WORD in context:
-            logger.info(f'Обнаружен wake-word "%s" в контексте "%s"' % config.WAKE_WORD, context)
+            logger.info(f'Обнаружен wake-word "%s" в контексте "%s"' % (config.WAKE_WORD, context))
             request = self._get_request_from_context(context)
 
             if request:

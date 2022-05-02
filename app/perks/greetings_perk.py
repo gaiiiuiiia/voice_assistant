@@ -5,7 +5,7 @@ from app.core.perk_base import PerkBase
 
 class GreetingsPerk(PerkBase):
 
-    def get_manifest(cls) -> Dict:
+    def _do_create_manifest(self) -> Dict:
         return {
             'name': 'GreetingsPerk',
             'methods': {

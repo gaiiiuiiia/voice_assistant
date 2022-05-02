@@ -8,10 +8,30 @@ from abc import abstractmethod
 
 class PerkBase(metaclass=ABCMeta):
 
-    @classmethod
+    def __init__(self) -> None:
+        self._manifest = self._do_create_manifest()
+
     @abstractmethod
-    def get_manifest(cls) -> Dict:
+    def _do_create_manifest(self) -> Dict:
+        """
+        При создании класса, необходимо указать манифест.
+        Метод обязан вернуть словарь вида:
+        {
+            'name': 'PerkName',
+            'methods': {
+                'method_name': {
+                    'keywords': ['some', 'keywords', ...],
+                    'args': [''],
+                },
+            },
+        }
+        :return:
+        Dict
+        """
         pass
+
+    def get_manifest(self) -> Dict:
+        return self._manifest
 
     def get_manifest_methods(self) -> List[str]:
         """
