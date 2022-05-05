@@ -6,6 +6,7 @@ from app.core.perk_validator import PerkValidator
 from app.core.voice_module import VoiceModule
 from app.core.perk_manager import PerkManager
 from app.core.text_transformers.word2vec.word2vec_transformer import Word2VecTransformer
+from app.core.assistant_manager import AssistantManager
 
 
 def main() -> None:
@@ -13,9 +14,10 @@ def main() -> None:
 
     validator = PerkValidator()
     perk_loader = PerkLoader(validator, config.get_path_os_sep(config.PERK_DIRECTORY))
+    perk_manager = PerkManager(perk_loader)
     text_transformer = Word2VecTransformer()
-    perk_manager = PerkManager(perk_loader, text_transformer)
-    voice_module = VoiceModule(perk_manager)
+    assistant_manager = AssistantManager(perk_manager, text_transformer)
+    voice_module = VoiceModule(assistant_manager)
 
     sentence = 'шарик кинь монету'
     voice_module.test(sentence)

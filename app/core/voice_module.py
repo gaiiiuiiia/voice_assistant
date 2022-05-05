@@ -5,7 +5,7 @@ import pyttsx3
 
 import app.config as config
 from app.core.voice_recorder import VoiceRecorder
-from app.core.perk_manager import PerkManager
+from app.core.assistant_manager import AssistantManager
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +14,8 @@ class VoiceModule:
 
     TTS_RATE = 150
 
-    def __init__(self, perk_manager: PerkManager) -> None:
-        self._perk_manager = perk_manager
+    def __init__(self, assistant_manager: AssistantManager) -> None:
+        self._assistant_manager = assistant_manager
         self._voice_recorder = VoiceRecorder()
         self._speaker = self.__init_pyttsx()
 
@@ -36,8 +36,8 @@ class VoiceModule:
             request = self._get_request_from_context(context)
 
             if request:
-                logger.info(f'Передаю запрос "%s" менеджеру перков' % request)
-                return self._perk_manager.process(request)
+                logger.info(f'Передаю запрос "%s" ассистенту' % request)
+                return self._assistant_manager.process(request)
 
     @staticmethod
     def _get_request_from_context(context: str) -> str:

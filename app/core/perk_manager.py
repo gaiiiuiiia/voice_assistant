@@ -4,19 +4,24 @@ import logging
 
 from app.core.perk_loader import PerkLoader
 from app.core.perk_base import PerkBase
-from app.core.text_transformers.text_transformer_base import TextTransformerBase
 from app.core.template_format_string import TemplateFormatString
 
 logger = logging.getLogger(__name__)
 
 
 class PerkManager:
-    def __init__(self, perk_loader: PerkLoader, text_transformer: TextTransformerBase) -> None:
+    def __init__(self, perk_loader: PerkLoader) -> None:
         self._perk_loader = perk_loader
-        self._text_transformer = text_transformer
         self._perks = self._perk_loader.load()
 
-    def process(self, text: str) -> Optional[str]:
+    def process(self, text: str) -> Optional[TemplateFormatString]:
+        """
+        Принимает строку и отправляет ее методу перка, если данная строка сопоставима с методом.
+        Иначе возвращает Null - ни один метод перков не может обработать данную строку.
+        :param text: строка запроса.
+        :return:
+        Optional[TemplateFormatString]
+        """
         perk_method = self._match_perk_method(text)
 
         if not perk_method:
@@ -30,29 +35,6 @@ class PerkManager:
         except Exception:
             logger.exception('Исключение при вызове метода "%s"' % perk_method.__name__)
             return
-
-        # TODO пока методы перков возвращают объект
-        assert type(result) is TemplateFormatString
-
-        try:
-            compiled_text = result.compile()
-            logger.info('Результат метода "%s": %s' % (perk_method.__name__, compiled_text))
-        except Exception:
-            logger.exception(f'Не удалось скомпилировать результат. %s' % result)
-            return
-
-        try:
-            text_transform = self._text_transformer.transform(result)
-        except Exception:
-            logger.exception(f'Не удалось трансформировать результат перка %s' % result)
-            return compiled_text
-
-        try:
-            compiled_text_transform = text_transform.compile()
-            logger.info(f'Результат трансформ текста: %s' % compiled_text_transform)
-        except Exception:
-            logger.exception(f'Не удалось скомпилировать результат после трансформа. %s' % text_transform)
-            return compiled_text
 
         return result
 
