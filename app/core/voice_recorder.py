@@ -14,7 +14,7 @@ class VoiceRecorder:
 
     def __init__(self) -> None:
         self.q = queue.Queue()
-        self.model = vosk.Model(config.VOSK_MODEL_DIR)
+        self.model = vosk.Model(config.get_path_os_sep(config.VOSK_MODEL_DIR))
         self.recorder = vosk.KaldiRecognizer(self.model, self.SAMPLERATE)
 
     def record(self) -> str:

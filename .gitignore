@@ -4,4 +4,4 @@
 venv
 __pycache__
 *.log
-vosk-model-small-ru-0.22
+app/models/*
