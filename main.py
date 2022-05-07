@@ -15,7 +15,12 @@ def main() -> None:
     validator = PerkValidator()
     perk_loader = PerkLoader(validator, config.get_path_os_sep(config.PERK_DIRECTORY))
     perk_manager = PerkManager(perk_loader)
-    text_transformer = Word2VecTransformer(config.get_path_os_sep(config.ANNOY_FILE_PATH))
+    text_transformer = Word2VecTransformer(
+        config.get_path_os_sep(config.NAVEC_FILE_PATH),
+        config.ANNOY_N_TREES,
+        config.ANNOY_METRICS_NAME,
+        config.get_path_os_sep(config.ANNOY_FILE_PATH)
+    )
     assistant_manager = AssistantManager(perk_manager, text_transformer)
     voice_module = VoiceModule(assistant_manager)
 
@@ -37,5 +42,11 @@ def init_logger() -> None:
     # logger.addHandler(file_handler)
 
 
+def test() -> None:
+    from module_test.tests import Tests
+    Tests.run()
+
+
 if __name__ == '__main__':
+    test()
     main()

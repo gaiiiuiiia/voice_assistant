@@ -5,36 +5,61 @@ import re
 class TemplateFormatString:
     """
     Класс, представляющий собой шаблонную строку и словарь шаблон-значение.
-    "Здесь будет {%text%}", {text: 'город-сад'}
+    "Здесь будет %text%", {text: 'город-сад'}
     """
 
-    def __init__(self, text: str, args: Dict) -> None:
+    TEMPLATE_LEFT_BOUNDARY = '%'
+    TEMPLATE_RIGHT_BOUNDARY = '%'
+
+    def __init__(self, text: str, values: Dict = None) -> None:
         self._text = text
-        self._args = args
+        self._values = values if type(values) is dict else {}
 
     def compile(self) -> str:
         """
         Вернуть отформатированную строку со вставленными шаблонными значениями.
         :return:
+        str
         """
-        return 'formatted string is here'
+
+        compiled_text = self._text
+        for key, value in self._values.items():
+            compiled_text = re.sub(
+                r'{lft}{key}{rgt}'.format(
+                    key=key,
+                    lft=self.TEMPLATE_LEFT_BOUNDARY,
+                    rgt=self.TEMPLATE_RIGHT_BOUNDARY
+                ),
+                value,
+                compiled_text,
+                flags=re.IGNORECASE)
+
+        return compiled_text
 
     @property
     def text(self) -> str:
         return self._text
 
     @property
-    def args(self) -> dict:
-        return self._args
+    def values(self) -> dict:
+        return self._values
 
-    @staticmethod
-    def is_placeholder_string(text: str) -> bool:
+    @classmethod
+    def is_template_text(cls, text: str) -> bool:
         """
         Проверить, является ли строка шаблоном.
         :param text:
         :return:
+        bool
         """
-        return True
 
-    def __repr__(self) -> str:
-        pass
+        return bool(
+            re.match(
+                r'^{lft}.+{rgt}$'.format(
+                    lft=cls.TEMPLATE_LEFT_BOUNDARY,
+                    rgt=cls.TEMPLATE_RIGHT_BOUNDARY
+                ),
+                text,
+                flags=re.IGNORECASE
+            )
+        )

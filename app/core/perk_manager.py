@@ -5,6 +5,7 @@ import logging
 from app.core.perk_loader import PerkLoader
 from app.core.perk_base import PerkBase
 from app.core.template_format_string import TemplateFormatString
+from app.exceptions.response_method_not_found_exception import ResponseMethodNotFoundException
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +26,7 @@ class PerkManager:
         perk_method = self._match_perk_method(text)
 
         if not perk_method:
-            logger.error('Не найден метод, отвечающий запросу "%s"' % text)
-            return
+            raise ResponseMethodNotFoundException('Не найден метод, отвечающий запросу "%s"' % text)
 
         logger.info('Будет вызван метод "%s"' % perk_method.__name__)
         try:

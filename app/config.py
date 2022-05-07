@@ -16,6 +16,8 @@ ANNOY_FILE_PATH = 'app/models/annoy_trees.ann'
 # Метрика близости Annoy. "angular", "euclidean", "manhattan", "hamming", "dot"
 ANNOY_METRICS_NAME = 'euclidean'
 
+NAVEC_FILE_PATH = 'app/models/navec/navec_hudlit_v1_12B_500K_300d_100q.tar'
+
 LOG_DIR = 'app/logs'
 
 PERK_DIRECTORY = 'app/perks'

@@ -1,6 +1,7 @@
 from typing import Dict
 
 from app.core.perk_base import PerkBase
+from app.core.template_format_string import TemplateFormatString
 
 
 class GreetingsPerk(PerkBase):
@@ -16,5 +17,5 @@ class GreetingsPerk(PerkBase):
             },
         }
 
-    def greetings(self, *args, **kwargs) -> None:
-        print('Привет, Максим! Как твои дела?')
+    def greetings(self, *args, **kwargs) -> TemplateFormatString:
+        return TemplateFormatString('Привет, Максим! Как твои дела?')

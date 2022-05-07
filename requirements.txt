@@ -7,3 +7,4 @@ sounddevice==0.4.4
 SpeechRecognition==3.8.1
 vosk==0.3.32
 annoy==1.17.0
+razdel

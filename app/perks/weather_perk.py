@@ -1,6 +1,7 @@
 from typing import Dict
 
 from app.core.perk_base import PerkBase
+from app.core.template_format_string import TemplateFormatString
 
 
 class WeatherPerk(PerkBase):
@@ -16,5 +17,5 @@ class WeatherPerk(PerkBase):
             },
         }
 
-    def weather(self, *args, **kwargs) -> None:
+    def weather(self, *args, **kwargs) -> TemplateFormatString:
         pass

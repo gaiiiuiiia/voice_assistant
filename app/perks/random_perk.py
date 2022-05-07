@@ -2,6 +2,7 @@ from typing import Dict
 import random
 
 from app.core.perk_base import PerkBase
+from app.core.template_format_string import TemplateFormatString
 
 
 class RandomPerk(PerkBase):
@@ -16,8 +17,8 @@ class RandomPerk(PerkBase):
             },
         }
 
-    def random_coin(self, *args, **kwargs) -> str:
+    def random_coin(self, *args, **kwargs) -> TemplateFormatString:
         choices = ['орёл', 'решка']
 
-        return random.choice(choices)
+        return TemplateFormatString('выпал %side%', {'side': random.choice(choices)})
 

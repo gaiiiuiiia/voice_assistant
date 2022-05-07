@@ -2,6 +2,8 @@ import logging
 
 from app.interfaces.loggable_interface import LoggableInterface
 
+logger = logging.getLogger(__name__)
+
 
 class ExceptionBase(Exception, LoggableInterface):
 
@@ -10,4 +12,4 @@ class ExceptionBase(Exception, LoggableInterface):
         self.log(message)
 
     def log(self, message: str) -> None:
-        logging.getLogger(__name__).info(f'Exception %s: %s' % (self.__class__.__name__, message))
+        logger.exception(f'Exception %s: %s' % (self.__class__.__name__, message))
