@@ -7,6 +7,15 @@ def get_path_os_sep(path: str) -> str:
 
 WAKE_WORD = 'шарик'
 
+# Количество деревьев в лесу Annoy (желательно степень двойки)
+ANNOY_N_TREES = 256
+
+# Путь к файлу Annoy. Тут хранятся построенные леса
+ANNOY_FILE_PATH = 'app/models/annoy_trees.ann'
+
+# Метрика близости Annoy. "angular", "euclidean", "manhattan", "hamming", "dot"
+ANNOY_METRICS_NAME = 'euclidean'
+
 LOG_DIR = 'app/logs'
 
 PERK_DIRECTORY = 'app/perks'

@@ -15,7 +15,7 @@ def main() -> None:
     validator = PerkValidator()
     perk_loader = PerkLoader(validator, config.get_path_os_sep(config.PERK_DIRECTORY))
     perk_manager = PerkManager(perk_loader)
-    text_transformer = Word2VecTransformer()
+    text_transformer = Word2VecTransformer(config.get_path_os_sep(config.ANNOY_FILE_PATH))
     assistant_manager = AssistantManager(perk_manager, text_transformer)
     voice_module = VoiceModule(assistant_manager)
 
