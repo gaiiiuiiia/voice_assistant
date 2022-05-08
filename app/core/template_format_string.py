@@ -55,7 +55,7 @@ class TemplateFormatString:
 
         return bool(
             re.match(
-                r'^{lft}.+{rgt}$'.format(
+                r'^{lft}[A-Za-z_-]+{rgt}$'.format(
                     lft=cls.TEMPLATE_LEFT_BOUNDARY,
                     rgt=cls.TEMPLATE_RIGHT_BOUNDARY
                 ),

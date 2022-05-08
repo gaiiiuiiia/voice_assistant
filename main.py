@@ -42,11 +42,5 @@ def init_logger() -> None:
     # logger.addHandler(file_handler)
 
 
-def test() -> None:
-    from module_test.tests import Tests
-    Tests.run()
-
-
 if __name__ == '__main__':
-    test()
     main()
