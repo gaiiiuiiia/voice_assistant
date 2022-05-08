@@ -1,5 +1,7 @@
 from typing import Dict
 
+import random
+
 from app.core.perk_base import PerkBase
 from app.core.template_format_string import TemplateFormatString
 
@@ -11,11 +13,21 @@ class GreetingsPerk(PerkBase):
             'name': 'GreetingsPerk',
             'methods': {
                 'greetings': {
-                    'keywords': ['привет', 'как дела', 'что нового'],
+                    'keywords': ['привет', 'здравствуй', 'как дела', 'что нового'],
                     'args': [''],
                 },
             },
         }
 
     def greetings(self, *args, **kwargs) -> TemplateFormatString:
-        return TemplateFormatString('Привет, Максим! Как твои дела?')
+        values = {
+            'hello': 'привет',
+            'you': 'тебя',
+        }
+        variants = [
+            # '%hello% как дела',
+            # '%hello%',
+            '%hello% очень рад %you% видеть',
+        ]
+
+        return TemplateFormatString(random.choice(variants), values)
