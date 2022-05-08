@@ -34,8 +34,11 @@ class Mannoy:
         :return:
         List[Any]
         """
-
-        res = self._annoy.get_nns_by_vector(self._vector_space.get_vector_of_element(element), n)
+        try:
+            res = self._annoy.get_nns_by_vector(self._vector_space.get_vector_of_element(element), n)
+        except KeyError:
+            # Не смогли найти такой элемент в векторном пространстве.
+            return element
 
         return [self._vector_space.get_elements()[i] for i in res]
 

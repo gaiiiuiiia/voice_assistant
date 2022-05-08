@@ -24,10 +24,11 @@ class VoiceModule:
         while True:
             context = self._voice_recorder.record()
             response = self._process_context(context)
+            logger.info(f'Результат %s', response)
 
             if response:
                 # self._speaker.say(response)
-                print(f'вход: %s \nвыход: %s', context, response)
+                print(f'вход: %s \nвыход: %s' % (context, response))
 
     def _process_context(self, context: str) -> Optional[str]:
         # TODO вынести это в другой модуль. тк голосовой модуль не должен заниматься обработкой запроса
@@ -52,4 +53,5 @@ class VoiceModule:
         return speaker
 
     def test(self, context: str) -> None:
-        self._process_context(context)
+        response = self._process_context(context)
+        print(f'вход: %s \nвыход: %s' % (context, response))

@@ -42,7 +42,7 @@ class AssistantManager:
 
         compiled_transformed_response = transformed_response.compile()
 
-        logger.info(f'Результат текст трансформа. было: "%s", стало "%s"'
+        logger.info(f'Результат текст-трансформа - было: "%s", стало "%s"'
                     % (compiled_perk_response, compiled_transformed_response))
 
         return compiled_transformed_response

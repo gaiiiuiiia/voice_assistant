@@ -18,5 +18,6 @@ RUN pip install --upgrade pip setuptools
 ADD . /app
 
 RUN pip install --no-cache-dir -r requirements.txt
+RUN python -m nltk.downloader popular
 
 ENTRYPOINT ["/bin/bash"]
