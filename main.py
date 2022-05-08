@@ -21,7 +21,7 @@ def main() -> None:
         config.ANNOY_METRICS_NAME,
         config.get_path_os_sep(config.ANNOY_FILE_PATH)
     )
-    assistant_manager = AssistantManager(perk_manager, text_transformer)
+    assistant_manager = AssistantManager(perk_manager, text_transformer, config.CHANCE_TO_IGNORE_REQUEST)
     voice_module = VoiceModule(assistant_manager)
 
     sentence = 'шарик кинь монету'
