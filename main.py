@@ -6,6 +6,7 @@ from app.core.perk_validator import PerkValidator
 from app.core.voice_module import VoiceModule
 from app.core.perk_manager import PerkManager
 from app.core.text_transformers.word2vec.word2vec_transformer import Word2VecTransformer
+from app.core.text_generators.gpt2.gpt2_handler import GPT2Handler
 from app.core.assistant_manager import AssistantManager
 
 
@@ -21,7 +22,13 @@ def main() -> None:
         config.ANNOY_METRICS_NAME,
         config.get_path_os_sep(config.ANNOY_FILE_PATH)
     )
-    assistant_manager = AssistantManager(perk_manager, text_transformer, config.CHANCE_TO_IGNORE_REQUEST)
+    gpt2 = GPT2Handler(config.GPT2_SERVER_URL)
+    assistant_manager = AssistantManager(
+        perk_manager,
+        text_transformer,
+        gpt2,
+        config.CHANCE_TO_IGNORE_REQUEST
+    )
     voice_module = VoiceModule(assistant_manager)
 
     sentence = 'шарик кинь монету'

@@ -5,6 +5,7 @@ import random
 
 from app.core.perk_manager import PerkManager
 from app.core.text_transformers.text_transformer_base import TextTransformerBase
+from app.core.text_generators.text_generator_base import TextGeneratorBase
 
 from app.exceptions.response_method_not_found_exception import ResponseMethodNotFoundException
 from app.exceptions.text_transform_exception import TextTransformException
@@ -17,10 +18,12 @@ class AssistantManager:
             self,
             perk_manager: PerkManager,
             text_transformer: TextTransformerBase,
+            text_generator: TextGeneratorBase,
             chance_to_ignore_request: float = 0,
     ) -> None:
         self._perk_manager = perk_manager
         self._text_transformer = text_transformer
+        self._text_generator = text_generator
         self._chance_to_ignore_request = chance_to_ignore_request
 
     def process(self, request: str) -> Optional[str]:
@@ -33,15 +36,15 @@ class AssistantManager:
 
         if random.random() <= self._chance_to_ignore_request:
             # С некоторой вероятностью проигнорируем запрос, запустив пустобрёх
-            logger.info(f'Запрос пользователя "%s" проигнорирован, запущен пустобрёх')
-            return self._run_talker()
+            logger.info(f'Запрос пользователя "%s" проигнорирован, запускается пустобрёх')
+            return self._run_talker(request)
 
         try:
             perk_response = self._perk_manager.process(request)
         except ResponseMethodNotFoundException:
             # Вот тут включается пустобрех
             logger.info(f'Перк не найден, запускается пустобрёх')
-            return self._run_talker()
+            return self._run_talker(request)
 
         if not perk_response:
             return
@@ -60,5 +63,5 @@ class AssistantManager:
 
         return compiled_transformed_response
 
-    def _run_talker(self) -> Optional[str]:
-        pass
+    def _run_talker(self, text: str) -> Optional[str]:
+        return self._text_generator.generate(text)
