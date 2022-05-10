@@ -24,6 +24,7 @@ class GPT2Handler(TextGeneratorBase):
             logger.info(f'Отправка запроса на %s' % self._url)
             response = requests.post(self._url, data=data)
         except Exception:
+            logger.error(f'Возникла ошибка отправки запроса.')
             return
 
         return response.text

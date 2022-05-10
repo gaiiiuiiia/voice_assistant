@@ -9,7 +9,7 @@ WAKE_WORD = 'шарик'
 
 CHANCE_TO_IGNORE_REQUEST = 0.2
 
-GPT2_SERVER_URL = ''
+GPT2_SERVER_URL = 'http://gpt2web:8000/gpt2/query/'
 
 # Количество деревьев в лесу Annoy (желательно степень двойки)
 ANNOY_N_TREES = 256
