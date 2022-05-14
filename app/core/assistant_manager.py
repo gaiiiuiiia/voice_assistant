@@ -64,4 +64,8 @@ class AssistantManager:
         return compiled_transformed_response
 
     def _run_talker(self, text: str) -> Optional[str]:
-        return self._text_generator.generate(text)
+        generated_text = self._text_generator.generate(text)
+
+        # TODO тут можно прикрутить стандартные фразы, которые буду замещать неловкое молчание.
+
+        return generated_text if generated_text else 'Какая-то ошибка при генерации текста'
