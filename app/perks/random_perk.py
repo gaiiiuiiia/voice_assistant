@@ -18,15 +18,19 @@ class RandomPerk(PerkBase):
         }
 
     def random_coin(self, *args, **kwargs) -> TemplateFormatString:
+        side = random.choice(['орёл', 'решка'])
         values = {
-            'side': random.choice(['орёл', 'решка']),
+            'toss': 'подкинул',
+            'coin': 'монету',
+            'drop': 'выпадает',
+            'luck': 'повезло',
         }
 
         variants = [
-            'подкинул монету и выпал %side%',
-            'выпал %side%',
-            '%side%',
-            'повезло выпал %side%',
+            f'%toss% %coin% и %drop% {side}',
+            f'тебе %drop% {side}',
+            f'{side}',
+            f'тебе %luck% %drop% {side}',
         ]
 
         return TemplateFormatString(random.choice(variants), values)

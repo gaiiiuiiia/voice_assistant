@@ -22,12 +22,14 @@ class GreetingsPerk(PerkBase):
     def greetings(self, *args, **kwargs) -> TemplateFormatString:
         values = {
             'hello': 'привет',
-            'you': 'тебя',
+            'very': 'очень',
+            'glad': 'рад',
+            'see': 'видеть',
         }
         variants = [
-            # '%hello% как дела',
-            # '%hello%',
-            '%hello% очень рад %you% видеть',
+            '%hello% как дела',
+            '%hello%',
+            '%hello% %very% %glad% тебя %see%',
         ]
 
         return TemplateFormatString(random.choice(variants), values)

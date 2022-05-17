@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class Word2VecTransformer(TextTransformerBase):
 
     # Случайное окно (от и до), в котором выбирается похожие слова. Правая граница не учитывается
-    CLOSEST_WORD_WINDOW = (3, 8)
+    CLOSEST_WORD_WINDOW = (3, 7)
 
     def __init__(
             self,
