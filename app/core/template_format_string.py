@@ -1,4 +1,5 @@
 from typing import Dict
+from typing import Optional
 import re
 
 
@@ -35,6 +36,18 @@ class TemplateFormatString:
                 flags=re.IGNORECASE)
 
         return compiled_text
+
+    def get_template_text(self, template: str) -> Optional[str]:
+        """
+        Вернуть значение шаблона. Если значение не найдено, возвращается None.
+        :param template: %template% или template
+        :return:
+        Optional[str]
+        """
+        template = template.lstrip(self.TEMPLATE_LEFT_BOUNDARY)
+        template = template.rstrip(self.TEMPLATE_RIGHT_BOUNDARY)
+
+        return self._values.get(template)
 
     @property
     def text(self) -> str:

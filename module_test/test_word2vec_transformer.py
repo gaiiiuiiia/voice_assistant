@@ -16,11 +16,15 @@ class TestWord2VecTransformer(unittest.TestCase):
         )
 
     def test_transform(self) -> None:
-        res = self._word2vec_transformer.transform(
-            TemplateFormatString(
-                'сегодня температура хорошая. ощущается как %temp% %desc%',
-                {'temp': '42', 'desc': 'градусов цельсия'}
-            )
-        ).compile()
+
+        import pprint
+        variants = set([self._word2vec_transformer.transform(
+                TemplateFormatString(
+                    'сегодня температура %temp%. %feels% как 42 градус цельсия',
+                    {'temp': 'хорошая', 'feels': 'ощущается', }
+                )
+            ) for _ in range(10)])
+
+        pprint.pprint(variants)
 
         self.assertTrue(True)

@@ -56,12 +56,10 @@ class AssistantManager:
         except TextTransformException:
             return compiled_perk_response
 
-        compiled_transformed_response = transformed_response.compile()
-
         logger.info(f'Результат текст-трансформа - было: "%s", стало "%s"'
-                    % (compiled_perk_response, compiled_transformed_response))
+                    % (compiled_perk_response, transformed_response))
 
-        return compiled_transformed_response
+        return transformed_response
 
     def _run_talker(self, text: str) -> Optional[str]:
         generated_text = self._text_generator.generate(text)
