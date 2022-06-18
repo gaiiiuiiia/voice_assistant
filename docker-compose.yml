@@ -5,7 +5,7 @@ services:
     build: .
     stdin_open: true
     tty: true
-    user: '1000'
+    user: 'root'
     volumes:
       - ./:/app
     devices:
