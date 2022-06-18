@@ -1,7 +1,5 @@
 FROM python:3.9-slim
 
-#docker run --rm -it --device /dev/snd -v $(pwd):/app -e DISPLAY=$DISPLAY -e MPLBACKEND="TKAgg" janva-testing-no-entry /bin/bash
-#docker run --rm -it --device /dev/snd -v $(pwd):/app -e DISPLAY=$DISPLAY -e MPLBACKEND="TKAgg" speech-rec-finetuning /bin/bash
 WORKDIR /app
 
 RUN apt-get update -y \
@@ -18,6 +16,5 @@ RUN pip install --upgrade pip setuptools
 ADD . /app
 
 RUN pip install --no-cache-dir -r requirements.txt
-RUN python -m nltk.downloader popular
 
 ENTRYPOINT ["/bin/bash"]
