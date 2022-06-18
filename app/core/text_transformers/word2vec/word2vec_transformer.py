@@ -28,22 +28,15 @@ class Word2VecTransformer(TextTransformerBase):
         vector_space = NavecEmbeddings(navec_path)
         self._mannoy = Mannoy(vector_space, annoy_n_trees, annoy_metrics_name, annoy_file_path)
 
-    def transform(self, template_formatted_string: TemplateFormatString) -> str:
-        text = template_formatted_string.text
+    def transform(self, template_formatted_string: TemplateFormatString) -> TemplateFormatString:
 
-        return re.sub(
-            r'{lft}[A-Za-z_-]+{rgt}'.format(
-                lft=template_formatted_string.TEMPLATE_LEFT_BOUNDARY,
-                rgt=template_formatted_string.TEMPLATE_RIGHT_BOUNDARY
-            ),
-            lambda token:
-            self.__get_random_closest_word(
-                template_formatted_string.get_template_text(
-                    token.group()
-                )
-            ),
-            text
-        )
+        old_values = template_formatted_string.values
+        new_values = {}
+
+        for key in old_values.keys():
+            new_values[key] = self.__get_random_closest_word(old_values[key])
+
+        return TemplateFormatString(template_formatted_string.text, new_values)
 
     def __get_random_closest_word(self, word: str) -> str:
         closest_words = self._mannoy.get_n_closest_elements(word, random.choice(range(*self.CLOSEST_WORD_WINDOW)))
