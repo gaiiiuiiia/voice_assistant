@@ -1,10 +1,14 @@
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict
+from typing import List
 from typing import TypeAlias
 
 import requests
 import os
+
+from natasha import LocationExtractor
+from yargy.parser import Match
 
 from app.core.perk_base import PerkBase
 from app.core.template_format_string import TemplateFormatString
@@ -28,6 +32,13 @@ class Weather:
     temperature: Celsius
     weather_type: WeatherType
     city: str
+
+
+def get_locations(text: str) -> List[str]:
+    extractor = LocationExtractor()
+    matches: List[Match] = extractor(text)
+
+    return [match.fact.name for match in matches]
 
 
 class OpenWeatherHandler:
@@ -101,7 +112,7 @@ class WeatherPerk(PerkBase):
         if not api_key:
             raise RuntimeError(f'%s. Не удалось определить OPENWEATHER_API_KEY' % self.__class__.__name__)
 
-        location = self.get_location_from_text(args[0])
+        location = get_locations(args[0])[0]
 
         weather_handler = OpenWeatherHandler(api_key)
         weather = weather_handler.get_weather(location)
@@ -110,11 +121,3 @@ class WeatherPerk(PerkBase):
             f'сейчас в {weather.city} {weather.weather_type}. %feels% как {weather.temperature} градус Цельсия.',
             {'feels': 'ощущается'}
         )
-
-    def get_location_from_text(self, text: str) -> str:
-        """
-        Получить локацию из строки. Метод имеет место вынести в хелпер.
-        :param text:
-        :return:
-        """
-        return 'казань'

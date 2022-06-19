@@ -8,3 +8,5 @@ SpeechRecognition==3.8.1
 vosk==0.3.32
 annoy==1.17.0
 requests
+natasha==0.10.0
+yargy==0.12.0
