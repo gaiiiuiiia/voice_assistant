@@ -16,6 +16,7 @@ services:
       - PYTHONUNBUFFERED=1
       - DISPLAY=$DISPLAY
       - MPLBACKEND=TkAgg
+      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
     networks:
       - testing
 

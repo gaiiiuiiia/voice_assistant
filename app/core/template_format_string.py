@@ -12,7 +12,7 @@ class TemplateFormatString:
     TEMPLATE_LEFT_BOUNDARY = '%'
     TEMPLATE_RIGHT_BOUNDARY = '%'
 
-    def __init__(self, text: str, values: Dict = None) -> None:
+    def __init__(self, text: str, values: Optional[Dict] = None) -> None:
         self._text = text
         self._values = values if type(values) is dict else {}
 
