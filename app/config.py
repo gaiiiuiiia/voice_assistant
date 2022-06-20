@@ -29,3 +29,5 @@ LOG_DIR = 'app/logs'
 PERK_DIRECTORY = 'app/perks'
 
 VOSK_MODEL_DIR = 'app/models/vosk-model-small-ru-0.22'
+
+ASSETS_DIR = 'assets'

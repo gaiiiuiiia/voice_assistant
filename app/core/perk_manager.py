@@ -1,4 +1,5 @@
 from typing import Optional
+from typing import Tuple
 
 import logging
 
@@ -23,38 +24,53 @@ class PerkManager:
         :return:
         Optional[TemplateFormatString]
         """
-        perk_method = self._match_perk_method(text)
-
-        if not perk_method:
+        try:
+            perk_method, keywords = self._match_perk_method(text)
+        except TypeError:
             raise ResponseMethodNotFoundException('Не найден метод, отвечающий запросу "%s"' % text)
 
-        logger.info('Будет вызван метод "%s"' % perk_method.__name__)
+        query = self._parse_query_from_text_by_keywords(text, keywords)
+
         try:
-            # TODO проверить, а нужны ли параметры методу
-            result = perk_method(text)
+            if query:
+                logger.info('Будет вызван метод "%s" с аргументом "%s"' % (perk_method.__name__, query))
+                result = perk_method(query)
+            else:
+                logger.info('Будет вызван метод "%s" без аргументов' % perk_method.__name__)
+                result = perk_method()
+
         except Exception:
-            logger.exception('Исключение при вызове метода "%s"' % perk_method.__name__)
+            logger.exception('Исключение при вызове метода "%s" с аргументом "%s"' % (perk_method.__name__, query))
             return
 
         return result
 
-    def _match_perk_method(self, text: str) -> Optional[callable]:
+    def _match_perk_method(self, text: str) -> Optional[Tuple[callable, list]]:
         """
-        Вернуть метод, который должен быть вызван, основываясь на заданном тексте.
+        Вернуть метод, который должен быть вызван, основываясь на заданном тексте и список keywords этого метода.
         :param text: текстовый запрос.
         :return:
-        Callable - метод перка, отвечающий запросу.
+        Optional[Tuple[callable, list]]
         """
 
         for perk in self._perks:
-            perk_method = self.__get_perk_method_name(perk, text)
+            perk_and_keywords = self.__get_perk_method_name_and_keywords(perk, text)
 
-            if perk_method:
-                return getattr(perk, perk_method)
+            if perk_and_keywords:
+                perk_method, keywords = perk_and_keywords
+                return getattr(perk, perk_method), keywords
 
     @staticmethod
-    def __get_perk_method_name(perk: PerkBase, text: str) -> callable:
+    def __get_perk_method_name_and_keywords(perk: PerkBase, text: str) -> Optional[Tuple[str, list]]:
         for method_name, keywords in perk.get_manifest_keywords().items():
             for keyword in keywords:
                 if keyword in text:
-                    return method_name
+                    return method_name, keywords
+
+    @staticmethod
+    def _parse_query_from_text_by_keywords(text: str, keywords: list) -> str:
+        for keyword in keywords:
+            if keyword in text:
+                return text.split(keyword, 1)[1].strip()
+
+        return text
