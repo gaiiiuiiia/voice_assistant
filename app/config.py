@@ -7,6 +7,8 @@ def get_path_os_sep(path: str) -> str:
 
 WAKE_WORD = 'шарик'
 
+DEFAULT_WEATHER_LOCATION = 'казань'
+
 CHANCE_TO_IGNORE_REQUEST = 0
 
 GPT2_SERVER_URL = 'http://gpt2web:8000/gpt2/query/'

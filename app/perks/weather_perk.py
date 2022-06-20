@@ -2,10 +2,12 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import TypeAlias
 
 import requests
 import os
+import logging
 
 from natasha import LocationExtractor
 from yargy.parser import Match
@@ -13,6 +15,10 @@ from yargy.parser import Match
 from app.core.perk_base import PerkBase
 from app.core.template_format_string import TemplateFormatString
 from app.exceptions.api_service_exception import ApiServiceException
+
+import app.config as config
+
+logger = logging.getLogger(__name__)
 
 Celsius: TypeAlias = int
 
@@ -34,7 +40,7 @@ class Weather:
     city: str
 
 
-def get_locations(text: str) -> List[str]:
+def parse_locations_from_string(text: str) -> List[str]:
     extractor = LocationExtractor()
     matches: List[Match] = extractor(text)
 
@@ -102,9 +108,14 @@ class WeatherPerk(PerkBase):
             },
         }
 
-    def weather(self, *args, **kwargs) -> TemplateFormatString:
+    def weather(self, *args, **kwargs) -> Optional[TemplateFormatString]:
 
-        if type(args[0]) is not str:
+        try:
+            query = args[0]
+        except IndexError:
+            query = config.DEFAULT_WEATHER_LOCATION
+
+        if type(query) is not str:
             raise RuntimeError(f'%s. Аргумент должен быть строкой' % self.__class__.__name__)
 
         api_key = os.getenv('OPENWEATHER_API_KEY')
@@ -112,7 +123,13 @@ class WeatherPerk(PerkBase):
         if not api_key:
             raise RuntimeError(f'%s. Не удалось определить OPENWEATHER_API_KEY' % self.__class__.__name__)
 
-        location = get_locations(args[0])[0]
+        parsed_locations = parse_locations_from_string(query)
+
+        if not parsed_locations:
+            logger.info(f'Поиск погоды не удался. Так как не удалось определить локацию из запроса %s' % query)
+            return
+
+        location = parsed_locations[0]
 
         weather_handler = OpenWeatherHandler(api_key)
         weather = weather_handler.get_weather(location)
