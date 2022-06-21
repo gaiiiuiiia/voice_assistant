@@ -1,5 +1,6 @@
 from typing import Dict
 from typing import Optional
+from typing import Protocol
 
 import logging
 import os
@@ -14,6 +15,11 @@ import app.config as config
 logger = logging.getLogger(__name__)
 
 
+class TodoHandler(Protocol):
+    def save(self, todo: str) -> None:
+        pass
+
+
 class TodoFileHandler:
 
     TODO_FILE_NAME = 'todos.txt'
@@ -21,19 +27,16 @@ class TodoFileHandler:
     def __init__(self) -> None:
         self._prepare_todo_folder()
 
-    def write_todo(self, todo: str) -> bool:
-        with open(self._get_todo_file_path(), mode='a', encoding='utf-8') as file:
+    def save(self, todo: str) -> None:
+        file_to_save = self._get_todo_file_path()
+        with open(file_to_save, mode='a', encoding='utf-8') as file:
             file.write(todo + '\n')
-            logger.info(f'Записано todo "%s"' % todo)
-
-        return True
+        logger.info(f'Записано todo "%s"' % todo)
 
     def _prepare_todo_folder(self) -> None:
         todo_folder_path = self._get_todo_folder_path()
         if not os.path.exists(todo_folder_path):
             recursively_create_folders(todo_folder_path)
-
-        return
 
     def _get_todo_file_path(self) -> str:
         return os.sep.join([config.get_path_os_sep(config.ASSETS_DIR), self.TODO_FILE_NAME])
@@ -62,20 +65,21 @@ class TodoPerk(PerkBase):
         }
 
     def create_todo(self, *args, **kwargs) -> Optional[TemplateFormatString]:
+        todo_file_handler = TodoFileHandler()
 
         try:
-            query = args[0]
-        except IndexError:
-            self._process_listening()
-            return TemplateFormatString(f'готово. заметки созданы')
+            if args and type(args[0]) is str:
+                todo_file_handler.save(args[0])
+            else:
+                self._process_listening(todo_file_handler)
+        except Exception:
+            logger.exception(f'Не удалось создать заметку')
+            return TemplateFormatString(f'не удалось создать заметку')
 
-        if type(query) is str:
-            todo_file_handler = TodoFileHandler()
-            todo_file_handler.write_todo(query)
+        return TemplateFormatString(f'готово. заметка %was_created%', {'was_created': 'создана'})
 
-    def _process_listening(self) -> None:
+    def _process_listening(self, todo_handler: TodoHandler) -> None:
         voice_recorder = VoiceRecorder()
-        todo_file_handler = TodoFileHandler()
 
         while True:
             query = voice_recorder.record()
@@ -83,4 +87,4 @@ class TodoPerk(PerkBase):
             if query in self.STOP_WORDS:
                 return
 
-            todo_file_handler.write_todo(query)
+            todo_handler.save(query)
