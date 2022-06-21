@@ -19,6 +19,9 @@ class TodoHandler(Protocol):
     def save(self, todo: str) -> None:
         pass
 
+    def delete(self) -> None:
+        pass
+
 
 class TodoFileHandler:
 
@@ -26,12 +29,17 @@ class TodoFileHandler:
 
     def __init__(self) -> None:
         self._prepare_todo_folder()
+        logger.info(f'Файл заметок: %s' % self._get_todo_file_path())
 
     def save(self, todo: str) -> None:
-        file_to_save = self._get_todo_file_path()
-        with open(file_to_save, mode='a', encoding='utf-8') as file:
+        todo_file_path = self._get_todo_file_path()
+        with open(todo_file_path, mode='a', encoding='utf-8') as file:
             file.write(todo + '\n')
         logger.info(f'Записано todo "%s"' % todo)
+
+    def delete(self) -> None:
+        todo_file_path = self._get_todo_file_path()
+        os.remove(todo_file_path)
 
     def _prepare_todo_folder(self) -> None:
         todo_folder_path = self._get_todo_folder_path()
@@ -53,32 +61,53 @@ class TodoPerk(PerkBase):
     # Слова, которые завершают запись заметок
     STOP_WORDS = {'готово', 'хватит', 'завершить', 'конец'}
 
+    def __init__(self) -> None:
+        super().__init__()
+        self._todo_file_handler = TodoFileHandler()
+
     def _do_create_manifest(self) -> Dict:
         return {
             'name': 'TodoPerk',
             'methods': {
                 'create_todo': {
-                    'keywords': ['создай заметку', 'запиши на память'],
+                    'keywords': ['создай заметку', 'запиши на память', 'создать заметку'],
+                    'args': [''],
+                },
+                'delete_todo': {
+                    'keywords': ['удали заметки'],
                     'args': [''],
                 },
             },
         }
 
     def create_todo(self, *args, **kwargs) -> Optional[TemplateFormatString]:
-        todo_file_handler = TodoFileHandler()
-
         try:
             if args and type(args[0]) is str:
-                todo_file_handler.save(args[0])
+                self._todo_file_handler.save(args[0])
             else:
-                self._process_listening(todo_file_handler)
+                self._process_listening()
         except Exception:
             logger.exception(f'Не удалось создать заметку')
             return TemplateFormatString(f'не удалось создать заметку')
 
-        return TemplateFormatString(f'готово. заметка %was_created%', {'was_created': 'создана'})
+        return TemplateFormatString(
+            f'готово. заметка %success% создана',
+            {'success': 'успешно'}
+        )
 
-    def _process_listening(self, todo_handler: TodoHandler) -> None:
+    def delete_todo(self, *args, **kwargs) -> Optional[TemplateFormatString]:
+        try:
+            self._todo_file_handler.delete()
+        except Exception:
+            logger.exception(f'Не удалось удалить заметки')
+            return TemplateFormatString(f'Не удалось удалить заметки')
+
+        return TemplateFormatString(
+            f'Заметки были %success% удалены',
+            {'success': 'успешно'}
+        )
+
+    def _process_listening(self) -> None:
         voice_recorder = VoiceRecorder()
 
         while True:
@@ -87,4 +116,4 @@ class TodoPerk(PerkBase):
             if query in self.STOP_WORDS:
                 return
 
-            todo_handler.save(query)
+            self._todo_file_handler.save(query)
