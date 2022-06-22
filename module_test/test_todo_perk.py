@@ -5,12 +5,15 @@ from app.perks.todo_perk import TodoPerk
 
 class TestTodoPerk(unittest.TestCase):
 
-    def test_create_todo(self) -> None:
+    def setUpClass(self) -> None:
+        self._todo_perk = TodoPerk()
 
-        todo_perk = TodoPerk()
-        todo_perk.create_todo('светлые люди')
+    def tearDownClass(self) -> None:
+        self._todo_perk.delete_todo()
+
+    def test_create_todo(self) -> None:
+        self._todo_perk.create_todo('светлые люди')
 
     def test_read_todo(self) -> None:
-        todo_perk = TodoPerk()
-        todo_perk.read_todo()
+        self.assertEqual(self._todo_perk.read_todo(), 'светлые люди')
 

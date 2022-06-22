@@ -26,5 +26,3 @@ class TestWord2VecTransformer(unittest.TestCase):
             ) for _ in range(10)])
 
         pprint.pprint(variants)
-
-        self.assertTrue(True)
