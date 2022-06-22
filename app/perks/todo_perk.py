@@ -1,5 +1,6 @@
 from typing import Dict
 from typing import Optional
+from typing import List
 from typing import Protocol
 
 import logging
@@ -22,6 +23,9 @@ class TodoHandler(Protocol):
     def delete(self) -> None:
         pass
 
+    def read(self) -> List[str]:
+        pass
+
 
 class TodoFileHandler:
 
@@ -29,7 +33,7 @@ class TodoFileHandler:
 
     def __init__(self) -> None:
         self._prepare_todo_folder()
-        logger.info(f'Файл заметок: %s' % self._get_todo_file_path())
+        logger.info(f'Создан файл заметок: %s' % self._get_todo_file_path())
 
     def save(self, todo: str) -> None:
         todo_file_path = self._get_todo_file_path()
@@ -40,6 +44,12 @@ class TodoFileHandler:
     def delete(self) -> None:
         todo_file_path = self._get_todo_file_path()
         os.remove(todo_file_path)
+
+    def read(self) -> List[str]:
+        todo_file_path = self._get_todo_file_path()
+
+        with open(todo_file_path, mode='r', encoding='utf-8') as file:
+            return file.readlines()
 
     def _prepare_todo_folder(self) -> None:
         todo_folder_path = self._get_todo_folder_path()
@@ -77,6 +87,10 @@ class TodoPerk(PerkBase):
                     'keywords': ['удали заметки'],
                     'args': [''],
                 },
+                'read_todo': {
+                    'keywords': ['прочти заметки', 'прочитай заметки', 'заметки'],
+                    'args': [''],
+                },
             },
         }
 
@@ -106,6 +120,13 @@ class TodoPerk(PerkBase):
             f'Заметки были %success% удалены',
             {'success': 'успешно'}
         )
+
+    def read_todo(self, *args, **kwargs) -> TemplateFormatString:
+        todos = self._todo_file_handler.read()
+        todos = map(str.strip, filter(lambda todo: len(todo.strip()) > 0, todos))
+        result = ', '.join(todos)
+
+        return TemplateFormatString(result)
 
     def _process_listening(self) -> None:
         voice_recorder = VoiceRecorder()
