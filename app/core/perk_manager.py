@@ -1,3 +1,5 @@
+from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Tuple
 
@@ -32,18 +34,20 @@ class PerkManager:
         query = self._parse_query_from_text_by_keywords(text, keywords)
 
         try:
-            if query:
-                logger.info('Будет вызван метод "%s" с аргументом "%s"' % (perk_method.__name__, query))
-                result = perk_method(query)
-            else:
-                logger.info('Будет вызван метод "%s" без аргументов' % perk_method.__name__)
-                result = perk_method()
+            logger.info('Будет вызван метод "%s" с аргументом "%s"' % (perk_method.__name__, query))
+            result = perk_method(
+                query=query,
+                perk_manager=self,
+            )
 
         except Exception:
             logger.exception('Исключение при вызове метода "%s" с аргументом "%s"' % (perk_method.__name__, query))
             return
 
         return result
+
+    def get_loaded_perks_manifest(self) -> List[Dict]:
+        return list(map(lambda perk: perk.get_manifest(), self._perks))
 
     def _match_perk_method(self, text: str) -> Optional[Tuple[callable, list]]:
         """

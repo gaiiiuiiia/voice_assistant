@@ -8,5 +8,5 @@ class TestWeatherPerk(unittest.TestCase):
     def test_weather(self) -> None:
         weather_perk = WeatherPerk()
 
-        result = weather_perk.weather('яблоко и вишня')
+        result = weather_perk.weather(query='яблоко и вишня')
 

@@ -54,8 +54,8 @@ class PerkLoader:
             try:
                 self._perk_validator.validate(perk)
             except IncorrectPerkClassException:
-
                 continue
+
             valid_perks.append(perk)
             logger.info(f'Перк %s прошел валидацию' % str(perk))
 

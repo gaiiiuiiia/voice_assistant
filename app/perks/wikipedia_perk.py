@@ -1,3 +1,4 @@
+import inspect
 from typing import Dict
 from typing import Optional
 
@@ -25,13 +26,20 @@ class WikipediaPerk(PerkBase):
         }
 
     def wiki_search(self, *args, **kwargs) -> Optional[TemplateFormatString]:
-        if not args or type(args[0]) is not str:
+        query = kwargs.get('query')
+
+        if type(query) is not str:
+            logger.warning(f'Аргумент должен быть строкой %s::%s, но был передан %s' % (
+                self.__class__.__name__,
+                inspect.currentframe().f_code.co_name,
+                type(query),
+            ))
             return
 
         count_sentences = random.choice(range(2, 4))
         wiki.set_lang('ru')
         try:
-            wiki_response = wiki.summary(args[0], sentences=count_sentences)
+            wiki_response = wiki.summary(query, sentences=count_sentences)
         except Exception:
             logger.exception('Ошибка при обработки вики запроса')
             return

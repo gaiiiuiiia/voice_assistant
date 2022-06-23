@@ -95,9 +95,11 @@ class TodoPerk(PerkBase):
         }
 
     def create_todo(self, *args, **kwargs) -> Optional[TemplateFormatString]:
+        query = kwargs.get('query')
+
         try:
-            if args and type(args[0]) is str:
-                self._todo_file_handler.save(args[0])
+            if type(query) is str:
+                self._todo_file_handler.save(query)
             else:
                 self._process_listening()
         except Exception:
@@ -121,7 +123,7 @@ class TodoPerk(PerkBase):
             {'success': 'успешно'}
         )
 
-    def read_todo(self, *args, **kwargs) -> TemplateFormatString:
+    def read_todo(self, *args, **kwargs) -> Optional[TemplateFormatString]:
         todos = self._todo_file_handler.read()
         todos = map(str.strip, filter(lambda todo: len(todo.strip()) > 0, todos))
         result = ', '.join(todos)

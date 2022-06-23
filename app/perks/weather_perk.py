@@ -1,3 +1,4 @@
+import inspect
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict
@@ -109,14 +110,17 @@ class WeatherPerk(PerkBase):
         }
 
     def weather(self, *args, **kwargs) -> Optional[TemplateFormatString]:
-
-        try:
-            query = args[0]
-        except IndexError:
-            query = config.DEFAULT_WEATHER_LOCATION
+        query = kwargs.get('query') \
+            if type(kwargs.get('query')) is str \
+            else config.DEFAULT_WEATHER_LOCATION
 
         if type(query) is not str:
-            raise RuntimeError(f'%s. Аргумент должен быть строкой' % self.__class__.__name__)
+            logger.warning(f'Аргумент должен быть строкой %s::%s, но был передан %s' % (
+                self.__class__.__name__,
+                inspect.currentframe().f_code.co_name,
+                type(query),
+            ))
+            return
 
         api_key = os.getenv('OPENWEATHER_API_KEY')
 
