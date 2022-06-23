@@ -18,7 +18,7 @@ class WikipediaPerk(PerkBase):
             'name': 'GreetingsPerk',
             'methods': {
                 'wiki_search': {
-                    'keywords': ['что такое', 'определение'],
+                    'keywords': ['что такое', 'кто такой', 'кто такая', 'определение', 'как ты думаешь'],
                     'args': [''],
                 },
             },
