@@ -1,4 +1,6 @@
 import inspect
+import logging
+import os
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict
@@ -7,17 +9,13 @@ from typing import Optional
 from typing import TypeAlias
 
 import requests
-import os
-import logging
-
 from natasha import LocationExtractor
 from yargy.parser import Match
 
+import app.config as config
 from app.core.perk_base import PerkBase
 from app.core.template_format_string import TemplateFormatString
 from app.exceptions.api_service_exception import ApiServiceException
-
-import app.config as config
 
 logger = logging.getLogger(__name__)
 
@@ -103,6 +101,7 @@ class WeatherPerk(PerkBase):
             'name': 'WeatherPerk',
             'methods': {
                 'weather': {
+                    'description': 'узнать, какая сейчас погода',
                     'keywords': ['погода', 'температура на улице'],
                     'args': [''],
                 },

@@ -1,9 +1,12 @@
 from __future__ import annotations
 from typing import Dict
 from typing import List
+from typing import Optional
 
 from abc import ABCMeta
 from abc import abstractmethod
+
+from app.exceptions.incorrect_perk_class_exception import IncorrectPerkClassException
 
 
 class PerkBase(metaclass=ABCMeta):
@@ -39,7 +42,10 @@ class PerkBase(metaclass=ABCMeta):
         :return:
         List[str] - список названий методов из манифеста
         """
-        return self.get_manifest()['methods'].keys()
+        try:
+            return list(self.get_manifest().get('methods').keys())
+        except TypeError:
+            return []
 
     def get_manifest_keywords(self) -> Dict[str, list]:
         """
@@ -50,10 +56,22 @@ class PerkBase(metaclass=ABCMeta):
 
         method_keywords_hash = {}
 
-        for method, params in self.get_manifest()['methods'].items():
-            method_keywords_hash[method] = params['keywords']
+        manifest_methods: dict = self.get_manifest().get('methods')
+
+        if not manifest_methods:
+            raise IncorrectPerkClassException
+
+        for method, params in manifest_methods.items():
+            keywords = params.get('keywords')
+            method_keywords_hash[method] = keywords if keywords else []
 
         return method_keywords_hash
+
+    def get_method_manifest(self, method_name: str) -> Optional[Dict]:
+        try:
+            return self.get_manifest().get('methods').get(method_name)
+        except TypeError:
+            raise IncorrectPerkClassException
 
     def __str__(self) -> str:
         return self.__class__.__name__

@@ -1,17 +1,15 @@
-from typing import Dict
-from typing import Optional
-from typing import List
-from typing import Protocol
-
 import logging
 import os
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Protocol
 
+import app.config as config
 from app.core.perk_base import PerkBase
 from app.core.template_format_string import TemplateFormatString
 from app.core.voice_recorder import VoiceRecorder
 from app.lib.lib import recursively_create_folders
-
-import app.config as config
 
 logger = logging.getLogger(__name__)
 
@@ -80,14 +78,17 @@ class TodoPerk(PerkBase):
             'name': 'TodoPerk',
             'methods': {
                 'create_todo': {
+                    'description': 'создать заметки',
                     'keywords': ['создай заметку', 'запиши на память', 'создать заметку'],
                     'args': [''],
                 },
                 'delete_todo': {
+                    'description': 'удалить заметки',
                     'keywords': ['удали заметки'],
                     'args': [''],
                 },
                 'read_todo': {
+                    'description': 'прочитать заметки',
                     'keywords': ['прочти заметки', 'прочитай заметки', 'заметки'],
                     'args': [''],
                 },

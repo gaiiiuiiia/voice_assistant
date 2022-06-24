@@ -1,9 +1,9 @@
 import inspect
+import logging
+import random
 from typing import Dict
 from typing import Optional
 
-import logging
-import random
 import wikipedia as wiki
 
 from app.core.perk_base import PerkBase
@@ -19,6 +19,7 @@ class WikipediaPerk(PerkBase):
             'name': 'GreetingsPerk',
             'methods': {
                 'wiki_search': {
+                    'description': 'найти что-нибудь в википедии',
                     'keywords': ['что такое', 'кто такой', 'кто такая', 'определение', 'как ты думаешь'],
                     'args': [''],
                 },

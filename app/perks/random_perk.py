@@ -1,5 +1,6 @@
-from typing import Dict
 import random
+from typing import Dict
+from typing import Optional
 
 from app.core.perk_base import PerkBase
 from app.core.template_format_string import TemplateFormatString
@@ -11,13 +12,14 @@ class RandomPerk(PerkBase):
             'name': 'RandomPerk',
             'methods': {
                 'random_coin': {
+                    'description': 'подбросить монету',
                     'keywords': ['подбрось монетку', 'подбрось монету', 'кинь монетку', 'кинь монету'],
                     'args': [''],
                 },
             },
         }
 
-    def random_coin(self, *args, **kwargs) -> TemplateFormatString:
+    def random_coin(self, *args, **kwargs) -> Optional[TemplateFormatString]:
         side = random.choice(['орёл', 'решка'])
         values = {
             'toss': 'подкинул',

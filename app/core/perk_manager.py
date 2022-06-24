@@ -46,6 +46,9 @@ class PerkManager:
 
         return result
 
+    def get_loaded_perks(self) -> List[PerkBase]:
+        return self._perks
+
     def get_loaded_perks_manifest(self) -> List[Dict]:
         return list(map(lambda perk: perk.get_manifest(), self._perks))
 
