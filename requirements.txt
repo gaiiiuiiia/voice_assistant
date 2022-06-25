@@ -3,6 +3,7 @@ navec==0.10.0
 numpy==1.22.3
 pycparser==2.21
 pyttsx3==2.90
+pygame==2.1.2
 sounddevice==0.4.4
 SpeechRecognition==3.8.1
 vosk==0.3.32

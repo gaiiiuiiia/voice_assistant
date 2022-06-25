@@ -8,14 +8,13 @@ services:
     user: 'root'
     volumes:
       - ./:/app
+      - ./asound.conf:/etc/asound.conf
     devices:
       - /dev/snd:/dev/snd
     environment:
       - LANG=C.UTF-8
       - PYTHONDONTWRITEBYTECODE=1
       - PYTHONUNBUFFERED=1
-      - DISPLAY=$DISPLAY
-      - MPLBACKEND=TkAgg
       - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
     networks:
       - testing
