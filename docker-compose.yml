@@ -18,6 +18,14 @@ services:
       - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
     networks:
       - testing
+  rhvoice_rest:
+    image: aculeasis/rhvoice-rest:amd64
+    ports:
+      - '8080:8080'
+    depends_on:
+      - voice_assistant
+    networks:
+      - testing
 
 networks:
   testing:

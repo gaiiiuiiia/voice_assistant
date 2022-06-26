@@ -1,13 +1,16 @@
 import logging
 
 import app.config as config
-from app.core.perk_loader import PerkLoader
-from app.core.perk_validator import PerkValidator
-from app.core.voice_module import VoiceModule
-from app.core.perk_manager import PerkManager
-from app.core.text_transformers.word2vec.word2vec_transformer import Word2VecTransformer
-from app.core.text_generators.gpt2.gpt2_handler import GPT2Handler
 from app.core.assistant_manager import AssistantManager
+from app.core.perk_loader import PerkLoader
+from app.core.perk_manager import PerkManager
+from app.core.perk_validator import PerkValidator
+from app.core.speaker_modules.rhvoice_speaker import RHVoiceOrator
+from app.core.speaker_modules.rhvoice_speaker import RHVoiceRestRequestSender
+from app.core.speaker_modules.rhvoice_speaker import RHVoiceSpeaker
+from app.core.text_generators.gpt2.gpt2_handler import GPT2Handler
+from app.core.text_transformers.word2vec.word2vec_transformer import Word2VecTransformer
+from app.core.voice_module import VoiceModule
 
 
 def main() -> None:
@@ -29,9 +32,22 @@ def main() -> None:
         gpt2,
         config.CHANCE_TO_IGNORE_REQUEST
     )
-    voice_module = VoiceModule(assistant_manager)
+    rhvoice_orator = RHVoiceOrator(
+        config.RHVOICE_ORATOR_NAME,
+        'mp3',
+        config.RHVOICE_ORATOR_RATE,
+        config.RHVOICE_ORATOR_PITCH,
+        config.RHVOICE_ORATOR_VOLUME
+    )
+    request_sender = RHVoiceRestRequestSender(
+        config.RHVOICE_SERVICE_NAME,
+        config.RHVOICE_SERVICE_PORT,
+        rhvoice_orator
+    )
+    speaker = RHVoiceSpeaker(request_sender, rhvoice_orator)
+    voice_module = VoiceModule(assistant_manager, speaker)
 
-    sentence = 'шарик кинь монету'
+    sentence = 'шарик как дела'
     voice_module.test(sentence)
     # voice_module.listen()
 

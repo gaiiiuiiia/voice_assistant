@@ -13,6 +13,13 @@ CHANCE_TO_IGNORE_REQUEST = 0
 
 GPT2_SERVER_URL = 'http://gpt2web:8000/gpt2/query/'
 
+RHVOICE_SERVICE_NAME = 'rhvoice_rest'  # название сервиса RHVoice в файле docker-compose
+RHVOICE_SERVICE_PORT = '8080'  # порт, на котором запущен сервис RHVoice
+RHVOICE_ORATOR_NAME = 'artemiy'  # Literal["aleksandr", "anna", "arina", "artemiy", "elena", "irina", "pavel"]
+RHVOICE_ORATOR_RATE = 30
+RHVOICE_ORATOR_PITCH = 42
+RHVOICE_ORATOR_VOLUME = 100
+
 # Количество деревьев в лесу Annoy (желательно степень двойки)
 ANNOY_N_TREES = 256
 
