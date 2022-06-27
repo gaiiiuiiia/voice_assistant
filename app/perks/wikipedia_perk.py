@@ -37,7 +37,10 @@ class WikipediaPerk(PerkBase):
             ))
             return
 
-        count_sentences = random.choice(range(2, 4))
+        if not query:
+            return
+
+        count_sentences = random.choice(range(2, 3))
         wiki.set_lang('ru')
         try:
             wiki_response = wiki.summary(query, sentences=count_sentences)

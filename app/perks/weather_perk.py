@@ -110,8 +110,9 @@ class WeatherPerk(PerkBase):
 
     def weather(self, *args, **kwargs) -> Optional[TemplateFormatString]:
         query = kwargs.get('query') \
-            if type(kwargs.get('query')) is str \
+            if type(kwargs.get('query')) is str and kwargs.get('query')\
             else config.DEFAULT_WEATHER_LOCATION
+        logger.info(query)
 
         if type(query) is not str:
             logger.warning(f'Аргумент должен быть строкой %s::%s, но был передан %s' % (
@@ -130,9 +131,10 @@ class WeatherPerk(PerkBase):
 
         if not parsed_locations:
             logger.info(f'Поиск погоды не удался. Так как не удалось определить локацию из запроса %s' % query)
-            return
+            return TemplateFormatString(f'я не понял, в каком месте ты хочешь узнать прогноз погоды')
 
         location = parsed_locations[0]
+        logger.info(location)
 
         weather_handler = OpenWeatherHandler(api_key)
         weather = weather_handler.get_weather(location)

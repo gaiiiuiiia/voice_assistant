@@ -5,7 +5,7 @@ def get_path_os_sep(path: str) -> str:
     return os.sep.join(path.split('/'))
 
 
-WAKE_WORD = 'шарик'
+WAKE_WORD = 'максим'
 
 DEFAULT_WEATHER_LOCATION = 'казань'
 
@@ -36,5 +36,6 @@ LOG_DIR = 'app/logs'
 PERK_DIRECTORY = 'app/perks'
 
 VOSK_MODEL_DIR = 'app/models/vosk-model-small-ru-0.22'
+# VOSK_MODEL_DIR = 'app/models/vosk-model-ru-0.22'
 
 ASSETS_DIR = 'assets'

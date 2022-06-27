@@ -31,6 +31,7 @@ class VoiceModule:
 
     def _process_context(self, context: str) -> Optional[str]:
         # TODO вынести это в другой модуль. тк голосовой модуль не должен заниматься обработкой запроса
+        logger.info(f'Запущен анализ контекста "%s"' % context)
         if config.WAKE_WORD in context:
             logger.info(f'Обнаружен wake-word "%s" в контексте "%s"' % (config.WAKE_WORD, context))
             request = self._get_request_from_context(context)
@@ -43,9 +44,15 @@ class VoiceModule:
     def _get_request_from_context(context: str) -> str:
         split_context = context.split(config.WAKE_WORD)
         split_context.pop(0)
-        return ' '.join(split_context).strip()
+        query = ' '.join(split_context).strip()
+
+        if not query:
+            return context.strip()
+
+        return query
 
     def test(self, context: str) -> None:
         response = self._process_context(context)
-        self._speaker.speak(response)
-        print(f'вход: %s \nвыход: %s' % (context, response))
+        if response:
+            self._speaker.speak(response)
+            print(f'вход: %s \nвыход: %s' % (context, response))

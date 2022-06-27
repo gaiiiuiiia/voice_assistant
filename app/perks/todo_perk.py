@@ -30,7 +30,7 @@ class TodoFileHandler:
     TODO_FILE_NAME = 'todos.txt'
 
     def __init__(self) -> None:
-        self._prepare_todo_folder()
+        self._prepare_todo()
         logger.info(f'Создан файл заметок: %s' % self._get_todo_file_path())
 
     def save(self, todo: str) -> None:
@@ -41,7 +41,8 @@ class TodoFileHandler:
 
     def delete(self) -> None:
         todo_file_path = self._get_todo_file_path()
-        os.remove(todo_file_path)
+        if os.path.exists(todo_file_path):
+            os.remove(todo_file_path)
 
     def read(self) -> List[str]:
         todo_file_path = self._get_todo_file_path()
@@ -49,10 +50,15 @@ class TodoFileHandler:
         with open(todo_file_path, mode='r', encoding='utf-8') as file:
             return file.readlines()
 
-    def _prepare_todo_folder(self) -> None:
+    def _prepare_todo(self) -> None:
         todo_folder_path = self._get_todo_folder_path()
         if not os.path.exists(todo_folder_path):
             recursively_create_folders(todo_folder_path)
+
+        todo_file_path = self._get_todo_file_path()
+        if not os.path.exists(todo_file_path):
+            with open(todo_file_path, mode='w', encoding='utf-8'):
+                pass
 
     def _get_todo_file_path(self) -> str:
         return os.sep.join([config.get_path_os_sep(config.ASSETS_DIR), self.TODO_FILE_NAME])
@@ -79,12 +85,12 @@ class TodoPerk(PerkBase):
             'methods': {
                 'create_todo': {
                     'description': 'создать заметки',
-                    'keywords': ['создай заметку', 'запиши на память', 'создать заметку'],
+                    'keywords': ['создай заметку', 'создай заметки', 'запиши на память', 'создать заметку', 'заметка'],
                     'args': [''],
                 },
                 'delete_todo': {
                     'description': 'удалить заметки',
-                    'keywords': ['удали заметки'],
+                    'keywords': ['удали заметки', 'удалить заметки'],
                     'args': [''],
                 },
                 'read_todo': {
@@ -99,7 +105,7 @@ class TodoPerk(PerkBase):
         query = kwargs.get('query')
 
         try:
-            if type(query) is str:
+            if type(query) is str and query:
                 self._todo_file_handler.save(query)
             else:
                 self._process_listening()
