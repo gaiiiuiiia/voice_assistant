@@ -8,3 +8,4 @@ app/models/*
 .env
 assets
 __temp.mp3
+.dockerignore

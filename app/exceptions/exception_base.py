@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 class ExceptionBase(Exception, LoggableInterface):
 
-    def __init__(self, message: str, *args, **kwargs) -> None:
+    def __init__(self, message: str = '', *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.log(message)
 
