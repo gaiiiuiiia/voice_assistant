@@ -17,10 +17,10 @@ def main() -> None:
     init_logger()
 
     validator = PerkValidator()
-    perk_loader = PerkLoader(validator, config.get_path_os_sep(config.PERK_DIRECTORY))
+    perk_loader = PerkLoader(validator, config.get_path_os_sep(config.PERK_DIR))
     perk_manager = PerkManager(perk_loader)
     text_transformer = Word2VecTransformer(
-        config.get_path_os_sep(config.NAVEC_FILE_PATH),
+        config.get_path_os_sep(config.NAVEC_MODEL_PATH),
         config.ANNOY_N_TREES,
         config.ANNOY_METRICS_NAME,
         config.get_path_os_sep(config.ANNOY_FILE_PATH)

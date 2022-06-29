@@ -1,9 +1,12 @@
-import sounddevice as sd
-import queue
-import vosk
 import json
+import os
+import queue
+
+import sounddevice as sd
+import vosk
 
 import app.config as config
+from app.exceptions.model_not_exist_exception import ModelNotExistException
 
 
 class VoiceRecorder:
@@ -15,7 +18,7 @@ class VoiceRecorder:
 
     def __init__(self) -> None:
         self._queue = queue.Queue()
-        model = vosk.Model(config.get_path_os_sep(config.VOSK_MODEL_DIR))
+        model = self._init_vosk_model()
         self._recognizer = vosk.KaldiRecognizer(model, self.SAMPLERATE)
 
     def record(self) -> str:
@@ -33,3 +36,11 @@ class VoiceRecorder:
 
     def _callback(self, data, frames, time, status) -> None:
         self._queue.put(bytes(data))
+
+    @staticmethod
+    def _init_vosk_model() -> vosk.Model:
+        vosk_model_path = config.get_path_os_sep(config.VOSK_MODEL_PATH)
+        if not os.path.exists(vosk_model_path):
+            raise ModelNotExistException(vosk_model_path)
+
+        return vosk.Model(vosk_model_path)
