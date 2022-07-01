@@ -3,7 +3,7 @@ import os
 from dataclasses import dataclass
 
 import requests
-import tqdm
+from tqdm import tqdm
 
 import app.config as config
 from app.exceptions.download_model_exception import DownloadModelException
@@ -15,6 +15,19 @@ init_logger()
 logger = logging.getLogger(__name__)
 
 
+def print_separate(separate_str: str = '=' * 42) -> callable:
+    def decorator(func: callable) -> callable:
+        def wrapper(*args, **kwargs):
+            print(separate_str)
+            res = func(*args, **kwargs)
+            print(separate_str)
+            return res
+
+        return wrapper
+
+    return decorator
+
+
 @dataclass(slots=True, frozen=True)
 class Model:
     name: str
@@ -22,18 +35,32 @@ class Model:
     path: str
     download_link: str
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class ConsoleDownloadInformer(DownloadInformerInterface):
     def __init__(self, model: Model) -> None:
         self._model = model
 
+    @print_separate
+    def inform_already_exist(self) -> None:
+        print(f'Модель {self._model.name} уже существует по пути {self._model.path}.'
+              f' Повторная загрузка не будет осуществлена.')
+
+    @print_separate
     def inform_before_download(self) -> None:
         print(f'Будет закачана модель: {self._model.name}.')
         print(f'Откуда: {self._model.download_link}.')
         print(f'Место назначения: {self._model.path}.')
 
+    @print_separate
     def inform_after_download(self) -> None:
         print(f'Модель успешно скачана. Расположение: {self._model.path}')
+
+    @print_separate
+    def inform_download_error(self) -> None:
+        print(f'Ошибка при скачивании модели {self._model.name}')
 
 
 class ModelDownloader(DownloaderInterface):
@@ -52,7 +79,7 @@ class ModelDownloader(DownloaderInterface):
             try:
                 response = requests.get(self._model.download_link, stream=True)
             except Exception:
-                raise DownloadModelException
+                raise DownloadModelException(self._model.name)
 
             file_size = int(response.headers["content-length"])
             chunk_size = 1000
@@ -72,9 +99,14 @@ class ModelDownloadHandler:
         self._downloader = downloader
         self._informer = informer
 
-    def download_model(self) -> None:
+    def handle_download(self) -> None:
         self._informer.inform_before_download()
-        self._downloader.download()
+        try:
+            self._downloader.download()
+        except DownloadModelException:
+            self._informer.inform_download_error()
+            return
+
         self._informer.inform_after_download()
 
 
@@ -96,9 +128,14 @@ def main() -> None:
 
     for model in models:
         informer = ConsoleDownloadInformer(model)
+
+        if os.path.exists(model.path):
+            informer.inform_already_exist()
+            continue
+
         downloader = ModelDownloader(model)
         model_download_handler = ModelDownloadHandler(downloader, informer)
-        model_download_handler.download_model()
+        model_download_handler.handle_download()
 
 
 if __name__ == '__main__':
