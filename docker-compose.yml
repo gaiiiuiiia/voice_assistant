@@ -2,10 +2,13 @@ version: "3.9"
 
 services:
   voice_assistant:
-    build: .
+    build:
+      context: .
+#      args:
+#        USER_ID: ${USER_ID:-0}
+#        GROUP_ID: ${GROUP_ID:-0}
     stdin_open: true
     tty: true
-    user: 'root'
     volumes:
       - ./:/app
       - ./asound.conf:/etc/asound.conf
@@ -21,7 +24,7 @@ services:
   rhvoice_rest:
     image: aculeasis/rhvoice-rest:amd64
     ports:
-      - '8080:8080'
+      - '8090:8080'
     depends_on:
       - voice_assistant
     networks:

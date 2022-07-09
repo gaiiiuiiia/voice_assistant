@@ -1,21 +1,22 @@
 import logging
 import os
+import shutil
 from dataclasses import dataclass
 
 import requests
 from tqdm import tqdm
 
 import app.config as config
-from app.exceptions.download_model_exception import DownloadModelException
-from app.interfaces.downloader_interface import DownloaderInterface
-from app.interfaces.download_informer_interface import DownloadInformerInterface
+from app.exceptions.download_exception import DownloadException
+from app.exceptions.download_request_exception import DownloadRequestException
+from app.exceptions.extract_file_exception import ExtractFileException
 from main import init_logger
 
 init_logger()
 logger = logging.getLogger(__name__)
 
 
-def print_separate(separate_str: str = '=' * 42) -> callable:
+def print_separate_decorator(separate_str: str = '=' * 42) -> callable:
     def decorator(func: callable) -> callable:
         def wrapper(*args, **kwargs):
             print(separate_str)
@@ -34,80 +35,105 @@ class Model:
     directory: str
     path: str
     download_link: str
+    need_to_extract: bool
 
     def __str__(self) -> str:
         return self.name
 
 
-class ConsoleDownloadInformer(DownloadInformerInterface):
-    def __init__(self, model: Model) -> None:
-        self._model = model
+class ConsoleInformer:
+    @staticmethod
+    @print_separate_decorator()
+    def inform_before_download(file_name: str, file_path: str, download_link: str) -> None:
+        print(f'Будет закачан файл: "{file_name}".')
+        print(f'Откуда: "{download_link}".')
+        print(f'Место назначения: "{file_path}".')
 
-    @print_separate
-    def inform_already_exist(self) -> None:
-        print(f'Модель {self._model.name} уже существует по пути {self._model.path}.'
-              f' Повторная загрузка не будет осуществлена.')
+    @staticmethod
+    @print_separate_decorator()
+    def inform_after_download(file_path: str) -> None:
+        print(f'Файл успешно скачан. Расположение: "{file_path}".')
 
-    @print_separate
-    def inform_before_download(self) -> None:
-        print(f'Будет закачана модель: {self._model.name}.')
-        print(f'Откуда: {self._model.download_link}.')
-        print(f'Место назначения: {self._model.path}.')
+    @staticmethod
+    @print_separate_decorator()
+    def inform_download_error(file_name: str) -> None:
+        print(f'Ошибка при скачивании "{file_name}".')
 
-    @print_separate
-    def inform_after_download(self) -> None:
-        print(f'Модель успешно скачана. Расположение: {self._model.path}')
+    @staticmethod
+    @print_separate_decorator()
+    def inform_extract_error(from_path: str, to_path: str) -> None:
+        print(f'Ошибка распаковки файла из "{from_path}" в "{to_path}".')
 
-    @print_separate
-    def inform_download_error(self) -> None:
-        print(f'Ошибка при скачивании модели {self._model.name}')
+    @staticmethod
+    @print_separate_decorator()
+    def inform_after_extract(to_path: str) -> None:
+        print(f'Файл был успешно распакован по пути "{to_path}".')
 
 
-class ModelDownloader(DownloaderInterface):
-    def __init__(self, model: Model) -> None:
-        self._model = model
+def download(link: str, download_file_path: str) -> None:
+    """
+    Скачивает данные модели из Интернета.
+    :return:
+    """
+    download_file_dir = os.path.dirname(download_file_path)
+    download_file_name = download_file_path.split(os.sep)[-1]
 
-    def download(self) -> None:
-        """
-        Скачивает данные модели из Интернета.
-        :return:
-        """
-        if not os.path.exists(self._model.directory):
-            os.makedirs(self._model.directory, exist_ok=True)
+    if not os.path.exists(download_file_dir):
+        os.makedirs(download_file_dir, exist_ok=True)
 
-        with open(self._model.path, 'wb') as file:
+    try:
+        with open(download_file_path, 'wb') as file:
             try:
-                response = requests.get(self._model.download_link, stream=True)
+                response = requests.get(link, stream=True)
             except Exception:
-                raise DownloadModelException(self._model.name)
-
+                raise DownloadRequestException(download_file_name)
             file_size = int(response.headers["content-length"])
-            chunk_size = 1000
-            with tqdm(ncols=100, desc=f'Скачивается {self._model.name}', total=file_size, unit_scale=True) as pbar:
-                # 1k for chunk_size, since Ethernet packet size is around 1500 bytes
+            chunk_size = 1024
+
+            with tqdm(ncols=150, desc=f'Скачивается {download_file_name}', total=file_size, unit_scale=True) as pbar:
                 for chunk in response.iter_content(chunk_size=chunk_size):
                     file.write(chunk)
                     pbar.update(chunk_size)
+    except Exception:
+        raise DownloadException(download_file_path)
 
 
-class ModelDownloadHandler:
-    def __init__(
-            self,
-            downloader: DownloaderInterface,
-            informer: DownloadInformerInterface
-    ) -> None:
-        self._downloader = downloader
-        self._informer = informer
+class FileExtractor:
+    ALLOWED_MIMETYPES = [
+        'application/zip',
+    ]
 
-    def handle_download(self) -> None:
-        self._informer.inform_before_download()
+    def __init__(self, extract_from: str, extract_to: str) -> None:
+        self._extract_from = extract_from
+        self._extract_to = extract_to
+
+    def extract(self) -> None:
+        if not os.path.exists(self._extract_from):
+            raise ExtractFileException(f'Файл "{self._extract_from}" не существует.')
+
+        if not self._can_be_extracted():
+            raise ExtractFileException(f'Файл "{self._extract_from}" не может быть распакован.')
+
+        if not os.path.exists(self._extract_to):
+            os.makedirs(self._extract_to, exist_ok=True)
+
         try:
-            self._downloader.download()
-        except DownloadModelException:
-            self._informer.inform_download_error()
-            return
+            self._do_extract()
+        except FileExistsError:
+            raise ExtractFileException(f'В директории "{self._extract_to}" уже существует указанный файл.')
 
-        self._informer.inform_after_download()
+    def _do_extract(self) -> None:
+        import zipfile
+
+        with (zipfile.ZipFile(self._extract_from, 'r')) as zip_file:
+            zip_file.extractall(self._extract_to)
+
+    def _can_be_extracted(self) -> bool:
+        import magic
+        mime = magic.Magic(mime=True)
+        mime_type = mime.from_file(self._extract_from)
+
+        return mime_type in self.ALLOWED_MIMETYPES
 
 
 def main() -> None:
@@ -116,26 +142,44 @@ def main() -> None:
             config.VOSK_MODEL,
             config.VOSK_MODEL_DIR,
             config.VOSK_MODEL_PATH,
-            config.DOWNLOAD_MODEL_LINK_VOSK
+            config.DOWNLOAD_MODEL_LINK_VOSK,
+            config.VOSK_MODEL_NEED_EXTRACT,
         ),
         Model(
             config.NAVEC_MODEL,
             config.NAVEC_MODEL_DIR,
             config.NAVEC_MODEL_PATH,
-            config.DOWNLOAD_MODEL_LINK_NAVEC
+            config.DOWNLOAD_MODEL_LINK_NAVEC,
+            config.NAVEC_MODEL_NEED_EXTRACT,
         )
     ]
 
     for model in models:
-        informer = ConsoleDownloadInformer(model)
+        download_path = os.sep.join([config.get_path_os_sep(config.DOWNLOAD_DIR), model.name])
 
-        if os.path.exists(model.path):
-            informer.inform_already_exist()
+        if not os.path.exists(download_path):
+            try:
+                ConsoleInformer.inform_before_download(model.name, download_path, model.download_link)
+                download(model.download_link, download_path)
+            except (DownloadException, DownloadRequestException):
+                ConsoleInformer.inform_download_error(model.name)
+                continue
+            ConsoleInformer.inform_after_download(download_path)
+
+        if model.need_to_extract:
+            extractor = FileExtractor(download_path, model.directory)
+            try:
+                extractor.extract()
+            except ExtractFileException:
+                ConsoleInformer.inform_extract_error(download_path, model.path)
+            ConsoleInformer.inform_after_extract(model.path)
             continue
 
-        downloader = ModelDownloader(model)
-        model_download_handler = ModelDownloadHandler(downloader, informer)
-        model_download_handler.handle_download()
+        if not os.path.exists(model.directory):
+            os.makedirs(model.directory, exist_ok=True)
+
+        os.replace(download_path, model.path)
+        shutil.rmtree(config.DOWNLOAD_DIR)
 
 
 if __name__ == '__main__':

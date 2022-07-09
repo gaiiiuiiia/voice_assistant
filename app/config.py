@@ -18,18 +18,22 @@ GPT2_SERVER_URL = 'http://gpt2web:8000/gpt2/query/'
 # ===== Directory Config =====
 PERK_DIR = 'app/perks'
 LOG_DIR = 'app/logs'
+DOWNLOAD_DIR = 'downloads'
 ASSETS_DIR = 'assets'
 MODELS_DIR = 'app/models'
 VOSK_MODEL_DIR = f'{MODELS_DIR}/vosk'
 NAVEC_MODEL_DIR = f'{MODELS_DIR}/navec'
-ANNOY_MODEL_DIR = f'f{MODELS_DIR}/annoy'
+ANNOY_MODEL_DIR = f'{MODELS_DIR}/annoy'
 # ============================
 
 # ===== Models Config =====
 VOSK_MODEL = 'vosk-model-small-ru-0.22'
-NAVEC_MODEL = 'navec_hudlit_v1_12B_500K_300d_100q.tar'
 VOSK_MODEL_PATH = f'{VOSK_MODEL_DIR}/{VOSK_MODEL}'
+VOSK_MODEL_NEED_EXTRACT = True
+
+NAVEC_MODEL = 'navec_hudlit_v1_12B_500K_300d_100q.tar'
 NAVEC_MODEL_PATH = f'{NAVEC_MODEL_DIR}/{NAVEC_MODEL}'
+NAVEC_MODEL_NEED_EXTRACT = False
 # =========================
 
 # ===== RHVoice Config =====
@@ -48,7 +52,7 @@ ANNOY_METRICS_NAME = 'euclidean'  # Метрика близости Annoy. "angu
 # ========================
 
 # ===== Scripts =====
-DOWNLOAD_MODELS_SCRIPT = 'scripts/download_models.py'
+DOWNLOAD_MODELS_SCRIPT = 'download_models.py'
 # ===================
 
 # ===== Download Model Link Config =====
